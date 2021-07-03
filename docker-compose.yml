@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  rest:
+    container_name: rest
+    build:
+      context: ./rest_api
+      dockerfile: Dockerfile
+    volumes:
+      - './rest_api/:/app'
+    ports:
+      - 5000:5000
+  db:
+    image: postgres:alpine
+    hostname: postgres_db
+    container_name: db
+    working_dir: '/app'
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: rust
+      POSTGRES_PASSWORD: rust2021
+    volumes:
+      - './database:/app'
+      - './database/vgdata/:/var/lib/postgresql/data'
