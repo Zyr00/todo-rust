@@ -5,8 +5,17 @@
 {% endblock title %}
 
 {% block content %}
-  <div id="result" class="row col"></div>
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<div id="result" class="row col"></div>
+{% if not todos %}
+<div class="card border-warning">
+  <div class="card-header bg-warning">Attention!</div>
+  <div class="card-body">
+    <p class="card-text">There are no todos at this moment.</p>
+    <a class="btn btn-dark btn-sm" href="/todo/add">Add new todo</a>
+  </div>
+</div>
+{% else %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
   {% for todo in todos %}
     {% set border = "border-danger" %}
     {% set status = "fa-check" %}
@@ -30,7 +39,8 @@
       </div>
     </div>
   {% endfor %}
-  </div>
+</div>
+{% endif %}
 {% endblock content %}
 
 {% block scripts %}
