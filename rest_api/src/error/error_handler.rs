@@ -1,4 +1,7 @@
-use actix_web::{ http::StatusCode, ResponseError, HttpResponse };
+use actix_web::{
+    http::{ StatusCode, HeaderName, HeaderValue },
+    middleware::errhandlers::{ErrorHandlerResponse},
+    ResponseError, HttpResponse, dev, Result };
 use postgres::Error;
 use serde::Deserialize;
 use serde_json::json;
@@ -18,7 +21,7 @@ impl ApiError {
 
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str(self.message.as_str())
+        write!(f, "{}", self.message.to_string())
     }
 }
 
@@ -48,13 +51,31 @@ impl ResponseError for ApiError {
             true => self.message.clone(),
             false => {
                 match status_code.as_u16() < 500 {
-                    true => "An unexpected error has ocurred".to_string(),
-                    false => "Internal Server Error".to_string()
+                    true => "An UnExPeCtEd eRrOr HaS oCuRrEd".to_string(),
+                    false => "InTeRnAl SeRvEr ErRoR".to_string()
                 }
             }
         };
 
         HttpResponse::build(status_code)
-            .json(json!({ "message": message }))
+            .json(json!({ "code": status_code.as_u16(), "message": message }))
     }
+}
+
+pub fn handle_error<B>(mut res: dev::ServiceResponse<B>) -> Result<ErrorHandlerResponse<B>> {
+    let status = res.status();
+    res = res.map_body::<_, B>(|_, _| {
+        dev::ResponseBody::Other(
+            format!(
+                r#"{{"code":{},"message":"{}"}}"#,
+                status.as_u16(),
+                status.canonical_reason().unwrap_or("")
+            )
+            .into(),
+        )
+    });
+    let hdr = HeaderName::from_static("content-type");
+    let val = HeaderValue::from_static("application/json");
+    res.headers_mut().insert(hdr, val);
+    Ok(ErrorHandlerResponse::Response(res))
 }

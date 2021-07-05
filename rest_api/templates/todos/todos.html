@@ -1,0 +1,91 @@
+{% extends "index.html" %}
+
+{% block title %}
+  {{ title }}
+{% endblock title %}
+
+{% block content %}
+  <div id="result" class="row col"></div>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for todo in todos %}
+    {% set border = "border-danger" %}
+    {% set status = "fa-check" %}
+    {% set text = "Mark as done" %}
+    {% if todo.done %}
+      {% set border = "border-dark" %}
+      {% set status = "fa-times" %}
+      {% set text = "Mark as todo" %}
+    {% endif %}
+    <div class="col">
+      <div class="card mb-3 {{ border }}">
+        <div class="card-body">
+          <h3 class="card-title">{{ todo.title }}</h3>
+          <p class="card-text">{{ todo.desc }}</p>
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a id="status-{{todo.id}}" class="btn btn-info btn-sm" data-bs-placement="top" title="{{text}}"><i class="fa {{status}}"></i></a>
+            <a id="edit-{{todo.id}}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Edit todo"><i class="fa fa-edit"></i></a>
+            <a id="delete-{{todo.id}}" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Delete todo"><i class="fa fa-trash"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  $(document).ready(() => {
+    {% for todo in todos %}
+    $('#status-{{todo.id}}').click(e => {
+      e.preventDefault();
+      let val = true; {% if todo.done %} val = false; {% endif %}
+      $.ajax({
+        type: 'PUT',
+        contentType: "application/json",
+        url: '/api/todo/{{ todo.id }}',
+        data: JSON.stringify({
+          title: "{{ todo.title }}",
+          desc: "{{ todo.desc }}",
+          done: val
+        })
+      })
+        .done(d => window.location.reload())
+        .fail((data, status, error) => {
+          const val = data.responseJSON ? data.responseJSON.message : "Unknow error"
+          $('#result').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error: <br></strong> ${ val }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                    aria-label="Close"></button>
+          </div>`)
+
+        });
+    });
+
+    $('#edit-{{todo.id}}').click(e => {
+      e.preventDefault();
+      window.location = "/todo/{{ todo.id }}";
+    });
+
+    $('#delete-{{todo.id}}').click(e => {
+      e.preventDefault();
+      $.ajax({
+        type: 'DELETE',
+        url: '/api/todo/{{ todo.id }}'
+      })
+        .done(d => window.location.reload())
+        .fail((data, status, error) => {
+          const val = data.responseJSON ? data.responseJSON.message : "Unknow error"
+          $('#result').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error: <br></strong> ${ val }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                    aria-label="Close"></button>
+          </div>`)
+
+        });
+    });
+    {% endfor %}
+  });
+</script>
+{% endblock scripts %}
+

@@ -20,7 +20,7 @@ Without [docker][4]
  - `git clone https://github.com/Zyr00/todo-rust.git todo`;
  - `cd todo/rest_api`;
  - edit `.env` file to setup the correct credentials for [postgres][2];
- - `cargo install systemfd cargo-watch` required if `./start.sh` is used;
+ - `cargo install cargo-watch` required if `./start.sh` is used;
  - `cargo build`;
  - `cargo run` or `./start.sh` for auto reloading.
 

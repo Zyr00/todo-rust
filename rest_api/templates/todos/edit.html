@@ -1,0 +1,71 @@
+{% extends "index.html" %}
+
+{% block title %}
+  {{ title }}
+{% endblock title %}
+
+{% block content %}
+<div id="result" class="row col"></div>
+<div class="row col">
+  <form>
+    <div class="row mb-3">
+      <label for="title" class="col-md-2 col-sm-3 col-form-label">Title: </label>
+      <div class="col-md-10 col-sm-9">
+        <input value="{{ todo.title }}" type="text" class="form-control" id="title" aria-describedby="titleHelp">
+        <div id="titleHelp" class="form-text">The title for the todo.</div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="desc" class="col-md-2 col-sm-3 col-form-label">Description: </label>
+      <div class="col-md-10 col-sm-9">
+        <input value="{{ todo.desc }}" type="text" class="form-control" id="desc" aria-describedby="descHelp">
+        <div id="descHelp" class="form-text">A description for the todo.</div>
+      </div>
+    </div>
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="done">
+      <label class="form-check-label" for="done">Done</label>
+    </div>
+    <div class="mt-5 d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary align-right">Submit</button>
+    </div>
+  </form>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  $(document).ready(() => {
+    $('#done').attr("checked", {{ todo.done }})
+
+    $('form').on('submit', e => {
+      e.preventDefault();
+      $.ajax({
+        type: 'PUT',
+        url: '/api/todo/{{ todo.id }}',
+        contentType: "application/json",
+        data: JSON.stringify({
+          title: $('#title').val(),
+          desc: $('#desc').val(),
+          done: $('#done').is(':checked')
+        })
+      })
+        .done(data => {
+          $('#result').html(`<div class="alert alert-success alert-dismissible fade show" role="alert">
+              ${ data.message }
+              <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                      aria-label="Close"></button>
+            </div>`)
+        })
+        .fail((data, status, error) => {
+          const val = data.responseJSON ? data.responseJSON.message : "Unknow error"
+          $('#result').html(`<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error: <br></strong> ${ val }
+            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                    aria-label="Close"></button>
+          </div>`)
+        })
+    });
+  });
+</script>
+{% endblock scripts %}

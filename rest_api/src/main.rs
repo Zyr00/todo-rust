@@ -1,41 +1,40 @@
 #[macro_use]
 extern crate log;
 
-use actix_web::{ App, HttpServer, web, HttpResponse };
-use listenfd::ListenFd;
+use actix_web::{ App, HttpServer, web, http::StatusCode, http::Method };
+use actix_web::middleware::errhandlers::ErrorHandlers;
+use actix_web::middleware::{ Logger, NormalizePath };
+use tera::{ Tera };
 
 mod config;
 mod error;
 mod todos;
 use config::{ Config };
-use error::ApiError;
-
-pub async fn error() -> Result<HttpResponse, ApiError> {
-    Err(ApiError::error(404, "Nothing Here!"))
-}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    let config = Config::from_env();
     env_logger::init();
 
-    let config = Config::from_env();
+    let url = format!("{}:{}", config.server.host, config.server.port);
+    info!("Starting server http://{}", url);
 
-    let mut listenfd = ListenFd::from_env();
-    let mut server = HttpServer::new(||
+    let server = HttpServer::new(|| {
+        let tera = Tera::new("templates/**/*").unwrap();
         App::new()
-            .configure(todos::init_routes)
-            .route("/*", web::get().to(error))
-    );
+            .wrap(Logger::default())
+            .wrap(Logger::new("%a %{User-Agent}i"))
+            .wrap(NormalizePath::default())
+            .wrap(
+                ErrorHandlers::new()
+                    .handler(StatusCode::NOT_FOUND, error::handle_error)
+            )
+            .data(tera)
+            .service(web::scope("/todo").configure(todos::view_routes))
+            .service(web::scope("/api/todo").configure(todos::api_routes))
+            .default_service(web::route().method(Method::GET))
+    })
+    .bind(&url)?;
 
-    server = match listenfd.take_tcp_listener(0)? {
-        Some(listener) => server.listen(listener)?,
-        None => {
-            server.bind(format!("{}:{}",
-                        config.server.host, config.server.port))?
-        }
-    };
-
-    info!("Starting server http://{}:{}",
-          config.server.host, config.server.port);
     server.run().await
 }
