@@ -1,7 +1,5 @@
 package com.example.android.adapters
 
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,12 +37,8 @@ class ListAdapter(_list: Array<Todo>): RecyclerView.Adapter<ViewHolder>() {
         init {
             itemView.setOnClickListener {
                 val context = itemView.context
-                val intent = Intent(context, DetailsActivity::class.java).apply {
-                    putExtra(Todo.ARG_TITLE, title.text)
-                    putExtra(Todo.ARG_DESC, desc.text)
-                    putExtra(Todo.ARG_DONE, list[adapterPosition].done)
-                }
-                context.startActivity(intent)
+                val intent = Todo.toIntent(list[adapterPosition], context, DetailsActivity::class.java)
+                context.startActivity(intent);
             }
         }
     }

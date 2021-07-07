@@ -2,6 +2,7 @@ package com.example.android
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import com.example.android.classes.Todo
 import com.example.android.fragments.DetailsFragment
 
@@ -10,12 +11,11 @@ class DetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.details_activity)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+
         if (savedInstanceState == null) {
-            val todo = Todo(
-                getStringFromIntent(Todo.ARG_TITLE),
-                getStringFromIntent(Todo.ARG_DESC),
-                intent.getBooleanExtra(Todo.ARG_DONE, false)
-            )
+            val todo = Todo.fromIntent(intent);
             val frag = DetailsFragment.newInstance(todo);
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, frag)
@@ -23,10 +23,13 @@ class DetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getStringFromIntent(name: String): String {
-        var value = "Unknown"
-        if (intent.getStringExtra(name) != null)
-            value = intent.getStringExtra(name)!!
-        return value
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            android.R.id.home -> {
+                super.onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
