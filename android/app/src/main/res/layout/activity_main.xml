@@ -10,15 +10,25 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.Tabs.AppBarOverlay">
+        android:theme="@style/Theme.Android.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/Theme.Android.PopupOverlay" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:tabInlineLabel="true"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
             app:tabBackground="@color/white"
-            app:tabIndicatorColor="?colorPrimary"
-            app:tabTextColor="?colorPrimary" />
+            app:tabIndicatorColor="?colorPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
