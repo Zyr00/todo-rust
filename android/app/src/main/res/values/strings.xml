@@ -2,4 +2,7 @@
     <string name="app_name">Kotos</string>
     <string name="tab_name_1">TODO</string>
     <string name="tab_name_2">DONE</string>
+    <string name="edit_todo">Edit Todo</string>
+    <string name="add_todo">Add Todo</string>
+    <string name="delete_todo">Delete Todo</string>
 </resources>
