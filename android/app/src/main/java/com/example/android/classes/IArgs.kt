@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 
-interface IArgs {
-    fun fromArguments(arguments: Bundle): Todo
-    fun toArguments(todo: Todo): Bundle
-    fun <C> toIntent(todo: Todo, context: Context?, activity: Class<C>): Intent
-    fun fromIntent(intent: Intent?): Todo
+interface IArgs<T> {
+    fun fromArguments(arguments: Bundle): T
+    fun toArguments(value: T): Bundle
+    fun <C> toIntent(value: T?, type: String, context: Context?, activity: Class<C>): Intent
+    fun fromIntent(intent: Intent?): T
 }

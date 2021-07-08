@@ -6,6 +6,7 @@ import android.view.Menu
 import android.widget.Toast
 import androidx.viewpager2.widget.ViewPager2
 import com.example.android.adapters.ViewPageAdapter
+import com.example.android.classes.Todo
 import com.example.android.classes.Tuple
 import com.example.android.fragments.ListDoneFragment
 import com.example.android.fragments.ListTodoFragment
@@ -38,7 +39,9 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            Toast.makeText(this, "Make new fucker", Toast.LENGTH_SHORT).show()
+            val intent = Todo.toIntent(null, FragmentHandlerActivity.TYPE_ADD, this,
+                FragmentHandlerActivity::class.java)
+            startActivity(intent);
         }
     }
 }

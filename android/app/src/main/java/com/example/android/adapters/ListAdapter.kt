@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.DetailsActivity
+import com.example.android.FragmentHandlerActivity
 import com.example.android.R
 import com.example.android.adapters.ListAdapter.*
 import com.example.android.classes.Todo
@@ -37,7 +37,11 @@ class ListAdapter(_list: Array<Todo>): RecyclerView.Adapter<ViewHolder>() {
         init {
             itemView.setOnClickListener {
                 val context = itemView.context
-                val intent = Todo.toIntent(list[adapterPosition], context, DetailsActivity::class.java)
+                val intent = Todo.toIntent(
+                    list[adapterPosition],
+                    FragmentHandlerActivity.TYPE_DETAILS,
+                    context,
+                    FragmentHandlerActivity::class.java)
                 context.startActivity(intent);
             }
         }

@@ -3,13 +3,14 @@ package com.example.android.classes
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import com.example.android.FragmentHandlerActivity
 
 class Todo(_title: String?, _desc: String?, _done: Boolean?) {
     var title = _title ?: "Unknown"
     var desc = _desc ?: "Unknown"
     var done = _done ?: false
 
-    companion object: IArgs {
+    companion object: IArgs<Todo> {
         private const val ARG_TITLE = "TODO_TITLE_ARG"
         private const val ARG_DESC = "TODO_DESC_ARG"
         private const val ARG_DONE = "TODO_DONE_ARG"
@@ -22,17 +23,21 @@ class Todo(_title: String?, _desc: String?, _done: Boolean?) {
             )
         }
 
-        override fun toArguments(todo: Todo): Bundle = Bundle().apply {
-            putString(ARG_TITLE, todo.title)
-            putString(ARG_DESC, todo.desc)
-            putBoolean(ARG_DONE, todo.done)
+        override fun toArguments(value: Todo): Bundle = Bundle().apply {
+            putString(ARG_TITLE, value.title)
+            putString(ARG_DESC, value.desc)
+            putBoolean(ARG_DONE, value.done)
         }
 
-        override fun <A> toIntent(todo: Todo, context: Context?, activity: Class<A>): Intent {
+        override fun <A> toIntent(value: Todo?, type: String, context: Context?, activity: Class<A>): Intent {
+            if (value == null) {
+                return Intent(context, activity).apply { putExtra(FragmentHandlerActivity.TYPE, type) }
+            }
             return Intent(context, activity).apply {
-                putExtra(ARG_TITLE, todo.title)
-                putExtra(ARG_DESC, todo.desc)
-                putExtra(ARG_DONE, todo.done)
+                putExtra(FragmentHandlerActivity.TYPE, type)
+                putExtra(ARG_TITLE, value.title)
+                putExtra(ARG_DESC, value.desc)
+                putExtra(ARG_DONE, value.done)
             }
         }
 

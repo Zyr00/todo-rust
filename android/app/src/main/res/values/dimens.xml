@@ -2,4 +2,6 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="margin_edit_text">16dp</dimen>
+    <dimen name="margin_checkbox">16dp</dimen>
 </resources>
