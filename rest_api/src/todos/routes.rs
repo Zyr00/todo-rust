@@ -10,10 +10,16 @@ async fn find_all() -> Result<HttpResponse, ApiError> {
     Ok(HttpResponse::Ok().json(json!( { "todos": todos } )))
 }
 
-#[get("/{id}/")]
+#[get("/id/{id}/")]
 async fn find(id: web::Path<i32>) -> Result<HttpResponse, ApiError> {
     let todo = Todo::find(id.into_inner())?;
     Ok(HttpResponse::Ok().json(json!( { "todo": todo } )))
+}
+
+#[get("/{val}/")]
+async fn find_by(val: web::Path<String>) -> Result<HttpResponse, ApiError> {
+    let todos = Todo::find_by(&val.into_inner())?;
+    Ok(HttpResponse::Ok().json(json!( { "todos": todos } )))
 }
 
 #[post("/")]
@@ -70,6 +76,7 @@ async fn view_add(tera: web::Data<Tera>) -> Result<impl Responder, ApiError> {
 pub fn api_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(find_all);
     cfg.service(find);
+    cfg.service(find_by);
     cfg.service(create);
     cfg.service(delete);
     cfg.service(update);

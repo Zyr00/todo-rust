@@ -10,7 +10,7 @@ import com.example.android.R
 import com.example.android.adapters.ListAdapter.*
 import com.example.android.classes.Todo
 
-class ListAdapter(_list: Array<Todo>): RecyclerView.Adapter<ViewHolder>() {
+class ListAdapter(_list: MutableList<Todo>): RecyclerView.Adapter<ViewHolder>() {
     private val list = _list
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

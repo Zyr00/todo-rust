@@ -1,6 +1,7 @@
 use crate::error::ApiError;
 use crate::config::db;
 use serde::{ Serialize, Deserialize };
+use postgres::types::Type;
 
 #[derive(Serialize, Deserialize)]
 pub struct Todo {
@@ -24,6 +25,34 @@ impl Todo {
 
         let mut todos: Vec<Self> = vec![];
         for row in conn.query(&statement, &[])? {
+            let todo = Todo {
+                id: row.get(0),
+                title: row.get(1),
+                desc: row.get(2),
+                done: row.get(3)
+            };
+            todos.push(todo);
+        }
+        Ok(todos)
+    }
+
+    pub fn find_by(value: &str) -> Result<Vec<Self>, ApiError> {
+        let mut conn = db::connection()?;
+
+        let val;
+        if value.eq("todo") {
+            val = false;
+        } else if value.eq("done") {
+            val = true;
+        } else {
+            let message: String = format!("No route /api/todo/{}", value);
+            return Err(ApiError::error(400, &message))
+        }
+
+        let statement = conn.prepare_typed("SELECT * FROM todo WHERE done = $1 ORDER BY id", &[Type::BOOL])?;
+
+        let mut todos: Vec<Self> = vec![];
+        for row in conn.query(&statement, &[&val])? {
             let todo = Todo {
                 id: row.get(0),
                 title: row.get(1),
