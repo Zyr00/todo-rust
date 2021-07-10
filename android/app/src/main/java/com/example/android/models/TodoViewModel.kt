@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.android.classes.Todo
 
 class TodoViewModel: ViewModel() {
-    private var _todo = MutableLiveData(Todo("", "", false))
+    private var _todo = MutableLiveData(Todo(-1, "", "", false))
     val todo: LiveData<Todo> = _todo
 
     fun updateTodo(todo: Todo) {

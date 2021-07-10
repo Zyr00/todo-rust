@@ -63,7 +63,7 @@ class AddEditTodoFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.save_todo -> {
-                val todo = Todo(title.text.toString(), desc.text.toString(), done.isChecked);
+                val todo = Todo(viewModel.todo.value!!.id, title.text.toString(), desc.text.toString(), done.isChecked);
                 viewModel.updateTodo(todo)
                 if (arguments != null && requireArguments().getBoolean(FROM_FRAGMENT, false))
                     requireActivity().supportFragmentManager.popBackStack()

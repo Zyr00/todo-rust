@@ -15,18 +15,21 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.Reader
 
-class Todo(_title: String?, _desc: String?, _done: Boolean?) {
+class Todo(_id: Int?, _title: String?, _desc: String?, _done: Boolean?) {
+    var id =  _id ?: -1
     var title = _title ?: "Unknown"
     var desc = _desc ?: "Unknown"
     var done = _done ?: false
 
     companion object: IArgs<Todo> {
+        private const val ARG_ID = "TODO_ID_ARG"
         private const val ARG_TITLE = "TODO_TITLE_ARG"
         private const val ARG_DESC = "TODO_DESC_ARG"
         private const val ARG_DONE = "TODO_DONE_ARG"
 
         override fun fromArguments(arguments: Bundle): Todo {
             return Todo(
+                arguments.getInt(ARG_ID),
                 arguments.getString(ARG_TITLE),
                 arguments.getString(ARG_DESC),
                 arguments.getBoolean(ARG_DONE)
@@ -34,6 +37,7 @@ class Todo(_title: String?, _desc: String?, _done: Boolean?) {
         }
 
         override fun toArguments(value: Todo): Bundle = Bundle().apply {
+            putInt(ARG_ID, value.id)
             putString(ARG_TITLE, value.title)
             putString(ARG_DESC, value.desc)
             putBoolean(ARG_DONE, value.done)
@@ -45,6 +49,7 @@ class Todo(_title: String?, _desc: String?, _done: Boolean?) {
             }
             return Intent(context, activity).apply {
                 putExtra(FragmentHandlerActivity.TYPE, type)
+                putExtra(ARG_ID, value.id)
                 putExtra(ARG_TITLE, value.title)
                 putExtra(ARG_DESC, value.desc)
                 putExtra(ARG_DONE, value.done)
@@ -53,6 +58,7 @@ class Todo(_title: String?, _desc: String?, _done: Boolean?) {
 
         override fun fromIntent(intent: Intent?): Todo {
             return Todo(
+                intent?.getIntExtra(ARG_ID, -1),
                 getStringFromIntent(intent, ARG_TITLE),
                 getStringFromIntent(intent, ARG_DESC),
                 intent?.getBooleanExtra(ARG_DONE, false)
@@ -66,7 +72,7 @@ class Todo(_title: String?, _desc: String?, _done: Boolean?) {
         }
 
         fun handleTodo(todo: JSONObject): Todo {
-            return Todo(todo.getString("title"), todo.getString("desc"),
+            return Todo(todo.getInt("id"), todo.getString("title"), todo.getString("desc"),
                 todo.getBoolean("done"))
         }
     }

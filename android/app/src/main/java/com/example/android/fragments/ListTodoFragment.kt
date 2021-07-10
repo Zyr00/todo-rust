@@ -31,6 +31,12 @@ class ListTodoFragment(_todo: String) : Fragment(), ApiTask.ApiListener {
         const val TODO = "/todo/todo"
         const val DONE = "/todo/done"
         private lateinit var recyclerView: RecyclerView
+
+        fun newInstance(bundle: Bundle): ListTodoFragment {
+            val frag = ListTodoFragment(TODO)
+            frag.arguments = bundle
+            return frag
+        }
     }
 
     override fun onCreateView(
@@ -69,6 +75,7 @@ class ListTodoFragment(_todo: String) : Fragment(), ApiTask.ApiListener {
         updateProgressBar(true)
         if (todos.size <= 0) {
             updateError(false, showRetry = false, message = "No Todos Found")
+            return
         }
         recyclerView.apply {
             startAnimation(AnimationUtils.loadAnimation(context, android.R.anim.fade_in))

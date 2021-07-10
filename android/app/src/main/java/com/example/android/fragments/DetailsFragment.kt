@@ -1,16 +1,23 @@
 package com.example.android.fragments
 
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import com.example.android.FragmentHandlerActivity
+import com.example.android.MainActivity
 import com.example.android.R
 import com.example.android.classes.Todo
 import com.example.android.models.TodoViewModel
+import com.example.android.tasks.ApiTask
+import com.github.kittinunf.fuel.core.FuelError
+import com.github.kittinunf.result.Result
 
-class DetailsFragment : Fragment() {
+class DetailsFragment : Fragment(), ApiTask.ApiListener {
 
     companion object {
         fun newInstance() = DetailsFragment()
@@ -67,9 +74,23 @@ class DetailsFragment : Fragment() {
                 return true
             }
             R.id.delete_todo -> {
-                Toast.makeText(context, "DELETE TODO", Toast.LENGTH_SHORT).show()
+                ApiTask.setListener(this)
+                ApiTask.delete("/todo/${viewModel.todo.value!!.id}")
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPre() { }
+
+    override fun onSuccess(result: Any) {
+        Toast.makeText(context, "ELIMINATED", Toast.LENGTH_SHORT).show()
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
+    }
+
+    override fun onFailure(result: Result.Failure<FuelError>) {
+        Toast.makeText(context, "FAILED", Toast.LENGTH_SHORT).show()
     }
 }
