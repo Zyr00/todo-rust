@@ -13,4 +13,6 @@
     <string name="helper_description">A small description for the todo</string>
     <string name="checkbox_done">Done</string>
     <string name="valid_todo_menu">Validate</string>
+    <string name="failed_to_load">Failed to load</string>
+    <string name="retry">Retry</string>
 </resources>

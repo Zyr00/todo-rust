@@ -15,21 +15,21 @@ class ApiTask {
         }
 
         fun <T : Any> get(path: String, deserializer: ResponseDeserializable<T>) {
+            listener.onPre();
             val url = "$API_URL$path"
             url.httpGet()
                 .responseObject(deserializer) { _, _, result ->
                     when (result) {
                         is Result.Success -> listener.onSuccess(result.value)
                         is Result.Failure -> listener.onFailure(result)
-                        else -> listener.onOther(result)
                     }
                 }
         }
     }
 
     interface ApiListener {
+        fun onPre()
         fun onSuccess(result: Any)
         fun onFailure(result: Result.Failure<FuelError>)
-        fun onOther(result: Result<Any, FuelError>)
     }
 }
